@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+  <!-- read configuration which can be overridden by system properties -->
+  <variable scope="system"
+            resource="logback-test.properties"/>
+
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date{ISO8601} [%5level] %logger{0}: %message%n%xEx{5}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${config.log.file}</file>
+    <encoder>
+      <pattern>${config.log.pattern}</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <maxIndex>10</maxIndex>
+      <FileNamePattern>${config.log.file}.%i</FileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>4MB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+
+  <logger name="${config.test.package}" additivity="false" level="debug">
+    <appender-ref ref="file"/>
+  </logger>
+
+  <logger name="${config.test.package}" additivity="false" level="${config.test.log.level}">
+    <appender-ref ref="stdout"/>
+  </logger>
+
+  <logger name="org.springframework.test" additivity="false" level="debug">
+    <appender-ref ref="file"/>
+  </logger>
+
+  <logger name="org.springframework.test" additivity="false" level="${config.test.log.level}">
+    <appender-ref ref="stdout"/>
+  </logger>
+
+  <root level="${config.root.log.level}">
+    <appender-ref ref="file"/>
+    <appender-ref ref="stdout"/>
+  </root>
+
+</configuration>

@@ -51,7 +51,7 @@ public class SpringAware extends TestWatcher {
     testContextManager = new TestContextManager(testClass);
   }
 
-  public static SpringAware forClass(Class<?> testClass) {
+  public static SpringAware forClass(final Class<?> testClass) {
     return new SpringAware(testClass);
   }
 
@@ -76,7 +76,7 @@ public class SpringAware extends TestWatcher {
         TEST_METHOD.set(description.getTestClass().getMethod(description.getMethodName()));
         testContextManager.beforeTestMethod(getTestInstance(), getTestMethod());
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new SpringAwareException(e);
     }
   }
@@ -99,7 +99,7 @@ public class SpringAware extends TestWatcher {
     if (description.isSuite()) {
       try {
         testContextManager.afterTestClass();
-      } catch (Exception e) {
+      } catch (final Exception e) {
         throw new SpringAwareException("Failure executing TestContextManager's afterTestClass.", e);
       }
     }
@@ -109,7 +109,7 @@ public class SpringAware extends TestWatcher {
     if (description.isTest()) {
       try {
         testContextManager.afterTestMethod(getTestInstance(), getTestMethod(), e);
-      } catch (Exception afterTestMethodFailure) {
+      } catch (final Exception afterTestMethodFailure) {
         throw new SpringAwareException("Failure calling TestContextManager's afterTestMethod.", afterTestMethodFailure);
       }
     }
@@ -119,7 +119,7 @@ public class SpringAware extends TestWatcher {
     try {
       TEST_INSTANCE.set(testInstance);
       testContextManager.prepareTestInstance(testInstance);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new SpringAwareException("Failed to prepare test instance.", e);
     }
     return this;

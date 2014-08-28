@@ -1,0 +1,12 @@
+.idea/
+target/
+*.iml
+*.ipr
+.classpath
+.project
+.settings/
+*.log
+*.out
+*.orig
+*~
+*.bak

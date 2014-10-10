@@ -73,7 +73,7 @@ public class SpringAware extends TestWatcher {
         testContextManager.beforeTestClass();
       } else if (description.isTest()) {
         LOG.debug("Preparing test {}#{}.", description.getClassName(), description.getMethodName());
-        TEST_METHOD.set(description.getTestClass().getMethod(description.getMethodName()));
+        TEST_METHOD.set(description.getTestClass().getMethod(sanitizeMethodName(description.getMethodName())));
         testContextManager.beforeTestMethod(getTestInstance(), getTestMethod());
       }
     } catch (final Exception e) {
@@ -123,5 +123,16 @@ public class SpringAware extends TestWatcher {
       throw new SpringAwareException("Failed to prepare test instance.", e);
     }
     return this;
+  }
+
+  private String sanitizeMethodName(String methodName) {
+      assert(methodName != null);
+
+      final int startBracketPosition = methodName.indexOf('[');
+      if (startBracketPosition == -1) {
+          return methodName;
+      }
+
+      return methodName.substring(0, startBracketPosition);
   }
 }

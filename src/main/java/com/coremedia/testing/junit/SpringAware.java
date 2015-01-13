@@ -11,6 +11,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -44,6 +46,8 @@ public class SpringAware extends TestWatcher {
 
   private static final ThreadLocal<Object> TEST_INSTANCE = new ThreadLocal<>();
   private static final ThreadLocal<Method> TEST_METHOD = new ThreadLocal<>();
+  private static final Pattern PLAIN_METHOD_NAME_PATTERN = Pattern.compile("^(?<plain>[^\\[]+).*$");
+  private static final String PLAIN_METHOD_GROUP = "plain";
 
   private final TestContextManager testContextManager;
 
@@ -72,13 +76,25 @@ public class SpringAware extends TestWatcher {
         LOG.debug("Preparing test class {}.", description.getClassName());
         testContextManager.beforeTestClass();
       } else if (description.isTest()) {
-        LOG.debug("Preparing test {}#{}.", description.getClassName(), description.getMethodName());
-        TEST_METHOD.set(description.getTestClass().getMethod(description.getMethodName()));
+        String methodName = plainMethodName(description);
+        LOG.debug("Preparing test {}#{}.", description.getClassName(), methodName);
+        TEST_METHOD.set(description.getTestClass().getMethod(methodName));
         testContextManager.beforeTestMethod(getTestInstance(), getTestMethod());
       }
     } catch (final Exception e) {
       throw new SpringAwareException(e);
     }
+  }
+
+  private static String plainMethodName(Description description) {
+    // Parameterized runner appends [...] to method name containing the actual parameters. They need
+    // to be removed.
+    String methodName = description.getMethodName();
+    Matcher matcher = PLAIN_METHOD_NAME_PATTERN.matcher(methodName);
+    if (matcher.matches()) {
+      methodName = matcher.group(PLAIN_METHOD_GROUP);
+    }
+    return methodName;
   }
 
   @Override

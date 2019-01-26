@@ -1,3 +1,9 @@
+---
+
+*Archived:* Solution is meanwhile available in Spring. No need for copy &amp; paste code anymore.
+
+---
+
 Spring-Aware-Rule
 =================
 
